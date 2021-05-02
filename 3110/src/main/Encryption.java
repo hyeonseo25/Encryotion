@@ -22,6 +22,11 @@ public class Encryption extends JPanel{
 	ImageIcon backImg = new ImageIcon("image/background.png");
 	Image back = backImg.getImage();
 	
+	char[][] board; // 암호판
+	ArrayList<String> ssangArr = new ArrayList<String>(); // 쌍자
+	ArrayList<Character> AmhoArr; // 쌍자
+	char[][] ssangza;
+	
 	JTextField tf1;
 	JTextField tf2;
 	JTextField tf3;
@@ -62,7 +67,13 @@ public class Encryption extends JPanel{
 		});
 		add(workbt);
 		
-		jtb = new JTable(5,5);
+		jtb = new JTable(5,5) {
+		    @Override
+		    public boolean isCellEditable(int row, int column) {
+		        return false;
+		    }
+		};
+		 
 		jtb.setBounds(640, 130, 300, 300);
 		jtb.setRowHeight(60);
 		DefaultTableCellRenderer dtcr = new DefaultTableCellRenderer(); // 디폴트테이블셀렌더러를 생성
@@ -79,7 +90,6 @@ public class Encryption extends JPanel{
 	}
 	
 	private void doEncryption() {
-		work2(tf1.getText());
 		work1(tf2.getText());
 		
 	}
@@ -88,37 +98,40 @@ public class Encryption extends JPanel{
 	}
 	private void work1(String key) {
 		char[] arr;
-		ArrayList<String> arr1 = new ArrayList<String>(); //바꾸기 전 쌍자암호를 저장
+		ssangArr = new ArrayList<String>(); //바꾸기 전 쌍자암호를 저장
 		key = key.replace(" ", "");
 		key = key.toUpperCase();
 		arr = key.toCharArray();
 		for(int i=0 ; i<arr.length ; i++) {
 			if(Character.toString(arr[i]).equals("Z")) {
-				arr1.add("Q");
+				ssangArr.add("Q");
 			}else {
-				arr1.add(Character.toString(arr[i]));
+				ssangArr.add(Character.toString(arr[i]));
 			}
 		}
-		for(int i=1 ; i<arr1.size() ; i++) { 
-			if(arr1.get(i).equals(arr1.get(i-1))){
-				arr1.add(i,"X");
+		for(int i=0 ; i<ssangArr.size()-1 ; i=i+2) { 
+			if(ssangArr.get(i).equals(ssangArr.get(i+1))){
+				ssangArr.add(i+1,"X");
 			}
 		}
-		if(arr1.size()%2!=0) {
-			arr1.add("X");
+		if(ssangArr.size()%2!=0) {
+			ssangArr.add("X");
 		}
-		String ssangza = "";
-		for(int i=0 ; i<arr1.size() ; i++) { 
+		String ssangzaStr = "";
+		for(int i=0 ; i<ssangArr.size() ; i++) { 
 			if(i%2==0&&i!=0) {
-				ssangza +=" ";
+				ssangzaStr +=" ";
 			}
-			ssangza += arr1.get(i); 
+			ssangzaStr += ssangArr.get(i); 
 		}
-		tf3.setText(ssangza);
+		tf3.setText(ssangzaStr);
+		
+		work2(tf1.getText());
 	}
 	
 	public void work2(String key) {
-		char[][] board = new char[5][5];
+		board = new char[5][5];
+		AmhoArr = new ArrayList<Character>();
 		key = key.replace(" ", "");
 		key = key.toUpperCase();
 		
@@ -152,8 +165,57 @@ public class Encryption extends JPanel{
 				jtb.setValueAt(board[j][k], j, k);
 			}
 		}
-		
-		
+		int x1 = 0 , x2 = 0 , y1 = 0, y2 = 0; //쌍자 암호 두 글자의 각각의 행,열 
+		for(int i = 0 ; i < ssangArr.size()-1 ; i=i+2 )
+		{
+			
+			char[] tmpArr = new char[2];
+			for( int j = 0 ; j < board.length ; j++ ) //쌍자암호의 각각 위치체크
+			{
+				for( int k = 0 ; k < board[j].length ; k++ )
+				{
+					if(Character.toString(board[j][k]).equals(ssangArr.get(i)))
+					{
+						x1 = j;
+						y1 = k;
+					}
+					if(Character.toString(board[j][k]).equals(ssangArr.get(i+1)))
+					{
+						x2 = j;
+						y2 = k;
+					}
+				}
+			}
+			
+			if(x1==x2) //행이 같은경우
+			{
+				tmpArr[0] = board[x1][(y1+1)%5];
+				tmpArr[1] = board[x2][(y2+1)%5];
+			}
+			else if(y1==y2) //열이 같은 경우
+			{
+				tmpArr[0] = board[(x1+1)%5][y1];
+				tmpArr[1] = board[(x2+1)%5][y2];
+			} 
+			else //행, 열 모두 다른경우
+			{
+				tmpArr[0] = board[x2][y1];
+				tmpArr[1] = board[x1][y2];
+			}
+			AmhoArr.add(tmpArr[0]);
+			AmhoArr.add(tmpArr[1]);
+			
+		}
+		String amhoStr = "";
+		for(int i=0 ; i<AmhoArr.size() ; i++) { 
+			if(i%2==0&&i!=0) {
+				amhoStr +=" ";
+			}
+			amhoStr += AmhoArr.get(i); 
+		}
+		tf4.setText(amhoStr);
+	}
+	public void work3() {
 		
 	}
 	@Override
