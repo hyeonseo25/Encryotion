@@ -31,33 +31,41 @@ public class Encryption extends JPanel{
 	JTextField tf2;
 	JTextField tf3;
 	JTextField tf4;
+	JTextField tf5;
 	
 	JTable jtb;
 	
 	JButton workbt;
+	JButton workbt2;
 	public Encryption(Object o) {
 		tf1 = new JTextField();
 		tf2 = new JTextField();
 		tf3 = new JTextField();
 		tf4 = new JTextField();
+		tf5 = new JTextField();
 		
 		tf1.setBounds(295, 185, 275, 30);
 		tf2.setBounds(295, 232, 275, 30);
-		tf3.setBounds(295, 348, 275, 30);
-		tf4.setBounds(295, 402, 275, 30);
+		tf3.setBounds(295, 285, 275, 30);
+		tf4.setBounds(295, 335, 275, 30);
+		tf5.setBounds(295, 385, 275, 30);
 		
 		tf3.setDisabledTextColor(new Color(0,0,0));
+		tf4.setDisabledTextColor(new Color(0,0,0));
+		tf5.setDisabledTextColor(new Color(0,0,0));
 		tf3.setEnabled(false);
 		tf4.setEnabled(false);
+		tf5.setEnabled(false);
 		
 		add(tf1);
 		add(tf2);
 		add(tf3);
 		add(tf4);
+		add(tf5);
 		
 		workbt = new JButton(new ImageIcon());
 		workbt.setText("암호화");
-		workbt.setBounds(150, 277, 200, 60);	
+		workbt.setBounds(140, 435, 200, 60);	
 		workbt.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -66,6 +74,19 @@ public class Encryption extends JPanel{
 			}
 		});
 		add(workbt);
+		
+		workbt2 = new JButton(new ImageIcon());
+		workbt2.setText("복호화");
+		workbt2.setBounds(370, 435, 200, 60);	
+		workbt2.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				doEncryption();
+				doDecryption();
+			}
+		});
+		add(workbt2);
 		
 		jtb = new JTable(5,5) {
 		    @Override
@@ -94,7 +115,7 @@ public class Encryption extends JPanel{
 		
 	}
 	private void doDecryption() {
-		
+		work3(tf2.getText());
 	}
 	private void work1(String key) {
 		char[] arr;
@@ -215,9 +236,41 @@ public class Encryption extends JPanel{
 		}
 		tf4.setText(amhoStr);
 	}
-	public void work3() {
+	
+	private void work3(String key) {
+		char[] arr;
+		ssangArr = new ArrayList<String>(); //바꾸기 전 쌍자암호를 저장
+		String key2 = key.toUpperCase();
+		key = key.replace(" ", "");
+		key = key.toUpperCase();
+		arr = key.toCharArray();
+		for(int i=0 ; i<arr.length ; i++) {
+			if(Character.toString(arr[i]).equals("Z")) {
+				ssangArr.add("Q");
+			}else {
+				ssangArr.add(Character.toString(arr[i]));
+			}
+		}
+		for(int i=0 ; i<ssangArr.size()-1 ; i=i+2) { 
+			if(ssangArr.get(i).equals(ssangArr.get(i+1))){
+				ssangArr.add(i+1,"X");
+			}
+		}
+		tf5.setText(key2);
+		if(ssangArr.size()%2!=0) {
+			ssangArr.add("X");
+		}
+		String ssangzaStr = "";
+		for(int i=0 ; i<ssangArr.size() ; i++) { 
+			if(i%2==0&&i!=0) {
+				ssangzaStr +=" ";
+			}
+			ssangzaStr += ssangArr.get(i); 
+		}
 		
 	}
+	
+	
 	@Override
 	public void paintComponent(Graphics g) {
 		// TODO Auto-generated method stub	
